@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LYMF — Foundation Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a;
+    --white: #ffffff;
+    --gold: #A8892A;
+    --gold-light: #C4A03A;
+    --gold-pale: #F5EDD6;
+    --gray: #6B6B6B;
+    --gray-light: #F7F7F7;
+    --border: #E4E4E4;
+    --green: #2A7A4A;
+    --green-pale: #E6F5ED;
+    --blue: #1B4FCC;
+    --blue-pale: #EBF0FF;
+    --red: #B0392B;
+    --red-pale: #FBEAE7;
+  }
+
+  body { font-family: 'Inter', sans-serif; background: var(--gray-light); color: var(--black); min-height: 100vh; }
+
+  .layout { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  aside {
+    width: 220px; background: var(--black); color: var(--white);
+    display: flex; flex-direction: column; padding: 28px 0 32px;
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 50;
+  }
+  .sidebar-brand { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 16px; }
+  .sidebar-brand .name {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 900;
+    letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.25;
+  }
+  .sidebar-brand .name span { color: var(--gold); }
+  .sidebar-brand .tag { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 4px; letter-spacing: 0.06em; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 24px; cursor: pointer;
+    transition: background 0.15s; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55);
+    border-left: 3px solid transparent; text-decoration: none; background: none; border-top:none; border-right:none; border-bottom:none; width:100%; text-align:left;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+  .nav-item.active { background: rgba(168,137,42,0.15); color: var(--gold-light); border-left-color: var(--gold); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .nav-section-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(255,255,255,0.3); padding: 16px 24px 6px;
+  }
+
+  .sidebar-footer { margin-top: auto; padding: 0 24px; }
+  .donate-link {
+    display: block; text-align: center; background: var(--gold); color: var(--black);
+    font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 800;
+    letter-spacing: 0.1em; text-transform: uppercase; padding: 11px; border-radius: 3px;
+    text-decoration: none; transition: background 0.15s;
+  }
+  .donate-link:hover { background: var(--gold-light); }
+
+  /* MAIN */
+  main { margin-left: 220px; flex: 1; }
+  .topbar {
+    background: var(--white); border-bottom: 1px solid var(--border); padding: 18px 36px;
+    display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40;
+  }
+  .topbar h1 {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .date-badge { font-size: 12px; color: var(--gray); background: var(--gray-light); padding: 6px 12px; border-radius: 3px; border: 1px solid var(--border); }
+  .btn {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 16px;
+    border: 1.5px solid var(--black); background: transparent; border-radius: 3px; cursor: pointer; transition: all 0.15s;
+  }
+  .btn:hover { background: var(--black); color: var(--white); }
+  .btn.gold { background: var(--gold); border-color: var(--gold); color: white; }
+  .btn.gold:hover { background: var(--gold-light); }
+
+  .content { padding: 28px 36px 60px; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* STAT CARDS */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 22px 20px; position: relative; overflow: hidden; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gold); }
+  .stat-card.blue::before { background: var(--blue); }
+  .stat-card.green::before { background: var(--green); }
+  .stat-card .label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray); margin-bottom: 8px; }
+  .stat-card .value { font-family: 'Barlow Condensed', sans-serif; font-size: 34px; font-weight: 900; line-height: 1; }
+  .stat-card .value.gold { color: var(--gold); }
+  .stat-card .value.blue { color: var(--blue); }
+  .stat-card .sub { font-size: 11px; margin-top: 6px; color: var(--gray); }
+
+  .panel { background: var(--white); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+  .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
+  .panel-action { font-size: 11px; font-weight: 700; color: var(--gold); cursor: pointer; letter-spacing: 0.06em; text-transform: uppercase; background: none; border: none; padding: 0; }
+
+  /* FLOW DIAGRAM */
+  .flow-row { display: flex; align-items: center; gap: 0; padding: 28px 20px; overflow-x: auto; }
+  .flow-step { flex: 1; min-width: 140px; text-align: center; padding: 0 8px; }
+  .flow-icon { font-size: 28px; margin-bottom: 8px; }
+  .flow-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+  .flow-val { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; color: var(--gold); }
+  .flow-arrow { font-size: 20px; color: var(--border); flex-shrink: 0; }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left; padding: 9px 16px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray);
+    border-bottom: 1px solid var(--border); background: var(--gray-light); white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--gray-light); }
+  td { padding: 11px 16px; vertical-align: middle; }
+  .name-cell { font-weight: 600; }
+  .sub-cell { font-size: 11px; color: var(--gray); margin-top: 2px; }
+  .amt-cell { font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 800; }
+
+  .badge { display: inline-block; padding: 3px 9px; border-radius: 2px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+  .badge.femp { background: var(--gold-pale); color: var(--gold); }
+  .badge.sports { background: var(--blue-pale); color: var(--blue); }
+  .badge.monthly { background: #E8F0FE; color: #3B5BDB; }
+  .badge.annual { background: var(--green-pale); color: var(--green); }
+  .badge.one-time { background: var(--gray-light); color: var(--gray); }
+  .badge.funded { background: var(--green-pale); color: var(--green); }
+  .badge.pending { background: #FFF4E0; color: #B8860B; }
+  .badge.active-status { background: var(--green-pale); color: var(--green); }
+  .badge.applied { background: var(--gray-light); color: var(--gray); }
+  .badge.complete { background: var(--blue-pale); color: var(--blue); }
+
+  .progress-track { background: var(--gray-light); border-radius: 99px; height: 6px; overflow: hidden; width: 80px; display: inline-block; vertical-align: middle; margin-right: 6px; }
+  .progress-fill { height: 100%; background: var(--blue); border-radius: 99px; }
+
+  /* PROGRAM CARDS */
+  .programs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; padding: 20px; }
+  .program-card { border: 1.5px solid var(--border); border-radius: 6px; padding: 20px; transition: border-color 0.15s; }
+  .program-card:hover { border-color: var(--gold); }
+  .program-card.lymf-operated { border-color: var(--gold); background: var(--gold-pale); }
+  .program-type-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; white-space: nowrap; }
+  .program-type-tag.owned { background: var(--gold); color: white; }
+  .program-type-tag.partner { background: var(--gray-light); color: var(--gray); }
+  .program-card .pc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .program-card .pc-name { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 0.03em; }
+  .program-card .pc-coach { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .program-card .pc-pricing { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+  .price-chip { background: var(--gray-light); border-radius: 3px; padding: 5px 10px; font-size: 11px; font-weight: 600; }
+  .program-card .pc-stats { display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--gray); }
+  .program-card .pc-stats strong { color: var(--black); font-size: 13px; }
+
+  /* ADD FORM (simple inline) */
+  .inline-form { padding: 20px; display: none; border-top: 1px solid var(--border); background: var(--gray-light); }
+  .inline-form.show { display: block; }
+  .iform-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 10px; }
+  .iform-row input, .iform-row select {
+    padding: 9px 11px; border: 1.5px solid var(--border); border-radius: 4px; font-size: 13px; font-family: 'Inter', sans-serif; outline: none;
+  }
+  .iform-row input:focus, .iform-row select:focus { border-color: var(--gold); }
+  .iform-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); margin-bottom: 4px; display: block; }
+
+  @media (max-width: 900px) {
+    aside { display: none; }
+    main { margin-left: 0; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .content { padding: 20px 16px 40px; }
+    .topbar { padding: 14px 16px; }
+    .flow-row { flex-direction: column; gap: 12px; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside>
+  <div class="sidebar-brand">
+    <div class="name">Leave Your <span>Mark</span></div>
+    <div class="tag">Foundation · Admin</div>
+  </div>
+
+  <button class="nav-item active" data-view="overview" onclick="showView('overview', this)">
+    <span class="nav-icon">📊</span><span>Overview</span>
+  </button>
+  <button class="nav-item" data-view="fund" onclick="showView('fund', this)">
+    <span class="nav-icon">🏆</span><span>Opportunity Fund</span>
+  </button>
+  <button class="nav-item" data-view="programs" onclick="showView('programs', this)">
+    <span class="nav-icon">🏀</span><span>Programs</span>
+  </button>
+  <button class="nav-item" data-view="donors" onclick="showView('donors', this)">
+    <span class="nav-icon">💰</span><span>Donor Log</span>
+  </button>
+
+  <div class="sidebar-footer">
+    <a class="donate-link" href="donate.html">View Donation Page ↗</a>
+  </div>
+</aside>
+
+<main>
+  <div class="topbar">
+    <h1 id="pageTitle">Overview</h1>
+    <div class="topbar-right">
+      <div class="date-badge" id="dateBadge">June 2026</div>
+      <button class="btn" onclick="exportData()">Export CSV</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ============ OVERVIEW ============ -->
+    <div class="view active" id="view-overview">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="label">Total Raised (All Funds)</div>
+          <div class="value gold" id="ov-total">$0</div>
+          <div class="sub" id="ov-total-sub">↑ across all programs</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="label">Opportunity Fund Balance</div>
+          <div class="value blue" id="ov-fund-balance">$0</div>
+          <div class="sub" id="ov-fund-sub">available to allocate</div>
+        </div>
+        <div class="stat-card green">
+          <div class="label">Kids Currently Funded</div>
+          <div class="value" id="ov-kids-funded">0</div>
+          <div class="sub">across all programs</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Total Donors</div>
+          <div class="value" id="ov-donors">0</div>
+          <div class="sub" id="ov-donors-sub">lifetime supporters</div>
+        </div>
+      </div>
+
+      <!-- THE MACHINE -->
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">How Money Moves — The System</div></div>
+        <div class="flow-row">
+          <div class="flow-step">
+            <div class="flow-icon">💳</div>
+            <div class="flow-label">Donations In</div>
+            <div class="flow-val" id="flow-donations">$0</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon">🏆</div>
+            <div class="flow-label">Opportunity Fund</div>
+            <div class="flow-val" id="flow-fund">$0</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon">👦</div>
+            <div class="flow-label">Allocated to Kids</div>
+            <div class="flow-val" id="flow-allocated">$0</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon">🏀</div>
+            <div class="flow-label">Paid to Programs</div>
+            <div class="flow-val" id="flow-paid">$0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Recent Donations</div></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Donor</th><th>Amount</th><th>Fund</th><th>Date</th></tr></thead>
+            <tbody id="ov-recent-donors"></tbody>
+          </table></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Funding Pipeline</div></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Kid</th><th>Program</th><th>Status</th></tr></thead>
+            <tbody id="ov-pipeline"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ OPPORTUNITY FUND ============ -->
+    <div class="view" id="view-fund">
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="label">Fund Balance</div>
+          <div class="value blue" id="fund-balance">$0</div>
+          <div class="sub">ready to allocate</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Total Raised for Fund</div>
+          <div class="value gold" id="fund-raised">$0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="label">Total Allocated</div>
+          <div class="value" id="fund-allocated">$0</div>
+          <div class="sub" id="fund-allocated-sub">to sponsored kids</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Kids Sponsored</div>
+          <div class="value" id="fund-kid-count">0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Sponsored Kids Roster</div>
+          <button class="panel-action" onclick="toggleForm('kidForm')">+ Add Kid / Scholarship</button>
+        </div>
+        <div class="inline-form" id="kidForm">
+          <div class="iform-row">
+            <div><span class="iform-label">First Name</span><input id="k-first" placeholder="First"></div>
+            <div><span class="iform-label">Last Initial</span><input id="k-last" placeholder="L." maxlength="3"></div>
+            <div><span class="iform-label">Program</span>
+              <select id="k-program"></select>
+            </div>
+            <div><span class="iform-label">Package</span>
+              <select id="k-package"></select>
+            </div>
+          </div>
+          <div class="iform-row">
+            <div><span class="iform-label">Status</span>
+              <select id="k-status">
+                <option value="applied">Applied</option>
+                <option value="pending">Pending Review</option>
+                <option value="funded" selected>Funded</option>
+                <option value="active-status">Active</option>
+                <option value="complete">Complete</option>
+              </select>
+            </div>
+            <div><span class="iform-label">Sessions Total</span><input id="k-sessions" type="number" placeholder="6" value="6"></div>
+            <div><span class="iform-label">Sessions Used</span><input id="k-used" type="number" placeholder="0" value="0"></div>
+            <div style="display:flex; align-items:flex-end;"><button class="btn gold" style="width:100%;" onclick="addKid()">Add to Roster</button></div>
+          </div>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Kid</th><th>Program</th><th>Package</th><th>Sessions</th><th>Status</th><th>Cost</th></tr></thead>
+          <tbody id="kidsTable"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ============ PROGRAMS ============ -->
+    <div class="view" id="view-programs">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Partner Programs</div>
+          <button class="panel-action" onclick="toggleForm('programForm')">+ Add Program</button>
+        </div>
+        <div class="inline-form" id="programForm">
+          <div class="iform-row">
+            <div><span class="iform-label">Program Name</span><input id="p-name" placeholder="HoopNerdz Academy"></div>
+            <div><span class="iform-label">Coach / Lead</span><input id="p-coach" placeholder="Coach Mark"></div>
+            <div><span class="iform-label">Sport / Category</span><input id="p-sport" placeholder="Basketball"></div>
+          </div>
+          <div class="iform-row">
+            <div><span class="iform-label">Package 1 (e.g. 1 session = $40)</span><input id="p-pkg1" placeholder="1 session=$40"></div>
+            <div><span class="iform-label">Package 2</span><input id="p-pkg2" placeholder="4 sessions=$140"></div>
+            <div><span class="iform-label">Package 3</span><input id="p-pkg3" placeholder="6 sessions=$200"></div>
+            <div style="display:flex; align-items:flex-end;"><button class="btn gold" style="width:100%;" onclick="addProgram()">Add Program</button></div>
+          </div>
+        </div>
+        <div class="programs-grid" id="programsGrid"></div>
+      </div>
+    </div>
+
+    <!-- ============ DONOR LOG ============ -->
+    <div class="view" id="view-donors">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Donor Log</div>
+          <button class="panel-action" onclick="toggleForm('donorForm')">+ Add Donation</button>
+        </div>
+        <div class="inline-form" id="donorForm">
+          <div class="iform-row">
+            <div><span class="iform-label">First Name</span><input id="d-first" placeholder="First"></div>
+            <div><span class="iform-label">Last Name</span><input id="d-last" placeholder="Last"></div>
+            <div><span class="iform-label">Email</span><input id="d-email" placeholder="email@example.com"></div>
+            <div><span class="iform-label">Amount</span><input id="d-amt" type="number" placeholder="100"></div>
+          </div>
+          <div class="iform-row">
+            <div><span class="iform-label">Fund</span>
+              <select id="d-fund"><option value="mentorship">Mentorship Program</option><option value="sports">Sports Inclusion</option></select>
+            </div>
+            <div><span class="iform-label">Type</span>
+              <select id="d-type"><option value="one-time">One-Time</option><option value="monthly">Monthly</option><option value="annual">Annual</option></select>
+            </div>
+            <div><span class="iform-label">Method</span>
+              <select id="d-method"><option>Card</option><option>Venmo</option><option>Cash App</option><option>Check</option><option>Cash</option></select>
+            </div>
+            <div style="display:flex; align-items:flex-end;"><button class="btn gold" style="width:100%;" onclick="addDonor()">Add Donation</button></div>
+          </div>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Donor</th><th>Amount</th><th>Fund</th><th>Type</th><th>Date</th><th>Method</th></tr></thead>
+          <tbody id="donorTable"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+
+<script>
+// ============ DATA STORE ============
+let donors = [];
+
+let programs = [
+  {
+    name: 'LYMF Mentorship Program', coach: 'Coach Mark', sport: 'Mentorship',
+    type: 'lymf-operated',
+    packages: [ { label: '1 Month', price: 100 }, { label: '3 Months', price: 250 }, { label: '6 Months', price: 450 }, { label: '1 Year', price: 800 } ]
+  },
+  {
+    name: 'HoopNerdz Academy', coach: 'Coach Mark', sport: 'Basketball',
+    type: 'partner',
+    packages: [ { label: '1 Session', price: 40 }, { label: '4 Sessions', price: 140 }, { label: '6 Sessions', price: 200 } ]
+  },
+  {
+    name: 'Black Ops Basketball League', coach: 'Coach Mark', sport: 'Basketball',
+    type: 'partner',
+    packages: [ { label: 'Registration', price: 75 }, { label: 'Season', price: 150 } ]
+  },
+  {
+    name: 'CSL Charter School League', coach: 'Coach Mark', sport: 'Basketball',
+    type: 'partner',
+    packages: [ { label: 'Registration', price: 75 }, { label: 'Season', price: 150 } ]
+  }
+];
+
+let kids = [];
+
+// ============ NAVIGATION ============
+function showView(viewId, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + viewId).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  btn.classList.add('active');
+  const titles = { overview: 'Overview', fund: 'Opportunity Fund', programs: 'Programs', donors: 'Donor Log' };
+  document.getElementById('pageTitle').textContent = titles[viewId];
+  renderAll();
+}
+
+function toggleForm(id) {
+  document.getElementById(id).classList.toggle('show');
+}
+
+// ============ CALCULATIONS ============
+function calc() {
+  const fempTotal = donors.filter(d => d.fund === 'femp').reduce((s, d) => s + d.amt, 0);
+  const sportsTotal = donors.filter(d => d.fund === 'sports').reduce((s, d) => s + d.amt, 0);
+  const totalRaised = fempTotal + sportsTotal;
+  const allocated = kids.reduce((s, k) => s + k.cost, 0);
+  const fundBalance = sportsTotal - allocated;
+  return { fempTotal, sportsTotal, totalRaised, allocated, fundBalance };
+}
+
+// ============ RENDER: OVERVIEW ============
+function renderOverview() {
+  const c = calc();
+  document.getElementById('ov-total').textContent = '$' + c.totalRaised.toLocaleString();
+  document.getElementById('ov-fund-balance').textContent = '$' + c.fundBalance.toLocaleString();
+  document.getElementById('ov-kids-funded').textContent = kids.filter(k => ['funded','active-status'].includes(k.status)).length;
+  document.getElementById('ov-donors').textContent = donors.length;
+
+  document.getElementById('flow-donations').textContent = '$' + c.totalRaised.toLocaleString();
+  document.getElementById('flow-fund').textContent = '$' + c.sportsTotal.toLocaleString();
+  document.getElementById('flow-allocated').textContent = '$' + c.allocated.toLocaleString();
+  const paid = kids.filter(k => k.status === 'complete' || k.status === 'active-status').reduce((s,k) => s + (k.cost * (k.sessionsUsed / Math.max(k.sessionsTotal,1))), 0);
+  document.getElementById('flow-paid').textContent = '$' + Math.round(paid).toLocaleString();
+
+  const recent = [...donors].slice(-5).reverse();
+  document.getElementById('ov-recent-donors').innerHTML = recent.map(d => `
+    <tr>
+      <td class="name-cell">${d.name}</td>
+      <td class="amt-cell">$${d.amt.toLocaleString()}</td>
+      <td><span class="badge ${d.fund}">${d.fund === 'mentorship' ? 'Mentorship' : 'Sports Inclusion'}</span></td>
+      <td style="font-size:12px;color:var(--gray);">${d.date}</td>
+    </tr>`).join('');
+
+  document.getElementById('ov-pipeline').innerHTML = kids.map(k => `
+    <tr>
+      <td class="name-cell">${k.name}</td>
+      <td style="font-size:12px;">${k.program}</td>
+      <td><span class="badge ${k.status}">${statusLabel(k.status)}</span></td>
+    </tr>`).join('');
+}
+
+function statusLabel(s) {
+  return { applied: 'Applied', pending: 'Pending', funded: 'Funded', 'active-status': 'Active', complete: 'Complete' }[s] || s;
+}
+
+// ============ RENDER: FUND ============
+function renderFund() {
+  const c = calc();
+  document.getElementById('fund-balance').textContent = '$' + c.fundBalance.toLocaleString();
+  document.getElementById('fund-raised').textContent = '$' + c.sportsTotal.toLocaleString();
+  document.getElementById('fund-allocated').textContent = '$' + c.allocated.toLocaleString();
+  document.getElementById('fund-kid-count').textContent = kids.length;
+
+  // populate program/package selects
+  const progSel = document.getElementById('k-program');
+  progSel.innerHTML = programs.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+  updatePackageSelect();
+  progSel.onchange = updatePackageSelect;
+
+  document.getElementById('kidsTable').innerHTML = kids.map(k => {
+    const pct = Math.round((k.sessionsUsed / Math.max(k.sessionsTotal,1)) * 100);
+    return `
+    <tr>
+      <td class="name-cell">${k.name}</td>
+      <td style="font-size:13px;">${k.program}</td>
+      <td style="font-size:13px;">${k.package}</td>
+      <td>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%;"></div></div>
+        <span style="font-size:11px;color:var(--gray);">${k.sessionsUsed}/${k.sessionsTotal}</span>
+      </td>
+      <td><span class="badge ${k.status}">${statusLabel(k.status)}</span></td>
+      <td class="amt-cell">$${k.cost.toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+}
+
+function updatePackageSelect() {
+  const progName = document.getElementById('k-program').value;
+  const prog = programs.find(p => p.name === progName);
+  const pkgSel = document.getElementById('k-package');
+  if (prog) {
+    pkgSel.innerHTML = prog.packages.map(pk => `<option value="${pk.label}|${pk.price}">${pk.label} — $${pk.price}</option>`).join('');
+  } else {
+    pkgSel.innerHTML = '';
+  }
+}
+
+function addKid() {
+  const first = document.getElementById('k-first').value.trim();
+  const last = document.getElementById('k-last').value.trim();
+  const program = document.getElementById('k-program').value;
+  const pkgRaw = document.getElementById('k-package').value;
+  const status = document.getElementById('k-status').value;
+  const sessionsTotal = parseInt(document.getElementById('k-sessions').value) || 1;
+  const sessionsUsed = parseInt(document.getElementById('k-used').value) || 0;
+
+  if (!first || !program || !pkgRaw) { alert('Please fill in name, program, and package.'); return; }
+  const [pkgLabel, pkgPrice] = pkgRaw.split('|');
+
+  kids.push({
+    name: `${first} ${last}`.trim(),
+    program, package: pkgLabel, cost: parseFloat(pkgPrice) || 0,
+    sessionsTotal, sessionsUsed, status
+  });
+
+  document.getElementById('k-first').value = '';
+  document.getElementById('k-last').value = '';
+  document.getElementById('k-sessions').value = '6';
+  document.getElementById('k-used').value = '0';
+  toggleForm('kidForm');
+  renderAll();
+}
+
+// ============ RENDER: PROGRAMS ============
+function renderPrograms() {
+  document.getElementById('programsGrid').innerHTML = programs.map(p => {
+    const kidsInProgram = kids.filter(k => k.program === p.name);
+    const totalFunded = kidsInProgram.reduce((s,k) => s + k.cost, 0);
+    const isOwned = p.type === 'lymf-operated';
+    return `
+    <div class="program-card ${isOwned ? 'lymf-operated' : ''}">
+      <div class="pc-top">
+        <div>
+          <div class="pc-name">${p.name}</div>
+          <div class="pc-coach">${p.coach} · ${p.sport}</div>
+        </div>
+        <span class="program-type-tag ${isOwned ? 'owned' : 'partner'}">${isOwned ? 'LYMF Operated' : 'Partner'}</span>
+      </div>
+      <div class="pc-pricing">
+        ${p.packages.map(pk => `<span class="price-chip">${pk.label}: $${pk.price}</span>`).join('')}
+      </div>
+      <div class="pc-stats">
+        <div><strong>${kidsInProgram.length}</strong> children funded</div>
+        <div><strong>$${totalFunded.toLocaleString()}</strong> total</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addProgram() {
+  const name = document.getElementById('p-name').value.trim();
+  const coach = document.getElementById('p-coach').value.trim();
+  const sport = document.getElementById('p-sport').value.trim();
+  const pkgInputs = [document.getElementById('p-pkg1').value, document.getElementById('p-pkg2').value, document.getElementById('p-pkg3').value];
+
+  if (!name) { alert('Please enter a program name.'); return; }
+
+  const packages = pkgInputs.filter(Boolean).map(raw => {
+    const [label, price] = raw.split('=');
+    return { label: (label || 'Package').trim(), price: parseFloat(price) || 0 };
+  });
+
+  programs.push({ name, coach: coach || 'TBD', sport: sport || 'General', packages: packages.length ? packages : [{ label: 'Standard', price: 50 }] });
+
+  ['p-name','p-coach','p-sport','p-pkg1','p-pkg2','p-pkg3'].forEach(id => document.getElementById(id).value = '');
+  toggleForm('programForm');
+  renderAll();
+}
+
+// ============ RENDER: DONORS ============
+function renderDonorTable() {
+  document.getElementById('donorTable').innerHTML = donors.map(d => `
+    <tr>
+      <td><div class="name-cell">${d.name}</div><div class="sub-cell">${d.email}</div></td>
+      <td class="amt-cell">$${d.amt.toLocaleString()}</td>
+      <td><span class="badge ${d.fund}">${d.fund === 'mentorship' ? 'Mentorship' : 'Sports Inclusion'}</span></td>
+      <td><span class="badge ${d.type}">${d.type === 'one-time' ? 'One-Time' : d.type.charAt(0).toUpperCase()+d.type.slice(1)}</span></td>
+      <td style="font-size:12px;color:var(--gray);">${d.date}</td>
+      <td style="font-size:12px;">${d.method}</td>
+    </tr>`).join('');
+}
+
+function addDonor() {
+  const first = document.getElementById('d-first').value.trim();
+  const last = document.getElementById('d-last').value.trim();
+  const email = document.getElementById('d-email').value.trim();
+  const amt = parseFloat(document.getElementById('d-amt').value);
+  const fund = document.getElementById('d-fund').value;
+  const type = document.getElementById('d-type').value;
+  const method = document.getElementById('d-method').value;
+
+  if (!first || !amt) { alert('Please enter at least a name and amount.'); return; }
+
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  donors.push({ name: `${first} ${last}`.trim(), email: email || '—', amt, fund, type, date: dateStr, method });
+
+  ['d-first','d-last','d-email','d-amt'].forEach(id => document.getElementById(id).value = '');
+  toggleForm('donorForm');
+  renderAll();
+}
+
+// ============ EXPORT ============
+function exportData() {
+  const rows = [['Type','Name','Detail','Amount','Status/Fund','Date']];
+  donors.forEach(d => rows.push(['Donation', d.name, d.email, `$${d.amt}`, d.fund, d.date]));
+  kids.forEach(k => rows.push(['Scholarship', k.name, `${k.program} - ${k.package}`, `$${k.cost}`, k.status, '']));
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'lymf-export.csv';
+  a.click();
+}
+
+// ============ RENDER ALL ============
+function renderAll() {
+  renderOverview();
+  renderFund();
+  renderPrograms();
+  renderDonorTable();
+}
+
+function updateDate() {
+  const d = new Date();
+  document.getElementById('dateBadge').textContent = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+}
+
+renderAll();
+updateDate();
+</script>
+</body>
+</html>
