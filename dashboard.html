@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <link rel="apple-touch-icon" href="lym-icon-admin.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LYMF — Foundation Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a;
+    --white: #ffffff;
+    --gold: #A8892A;
+    --gold-light: #C4A03A;
+    --gold-pale: #F5EDD6;
+    --gray: #6B6B6B;
+    --gray-light: #F7F7F7;
+    --border: #E4E4E4;
+    --green: #2A7A4A;
+    --green-pale: #E6F5ED;
+    --blue: #1B4FCC;
+    --blue-pale: #EBF0FF;
+    --red: #B0392B;
+    --red-pale: #FBEAE7;
+  }
+
+  body { font-family: 'Inter', sans-serif; background: var(--gray-light); color: var(--black); min-height: 100vh; }
+
+  .layout { display: flex; min-height: 100vh; }
+
+  /* LOGIN GATE */
+  #loginGate {
+    position: fixed; inset: 0; background: var(--black); z-index: 500;
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .login-card {
+    background: var(--white); border-radius: 10px; padding: 40px 32px; width: 100%; max-width: 380px; text-align: center;
+  }
+  .login-card .lname {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900;
+    letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.2; margin-bottom: 4px;
+  }
+  .login-card .lname span { color: var(--gold); }
+  .login-card .ltag { font-size: 11px; color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 28px; }
+  .login-card label { display: block; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); margin-bottom: 6px; margin-top: 14px; }
+  .login-card input {
+    width: 100%; padding: 13px; border: 1.5px solid var(--border); border-radius: 5px;
+    font-family: 'Inter', sans-serif; font-size: 15px; outline: none; transition: border-color .15s;
+  }
+  .login-card input:focus { border-color: var(--gold); }
+  .login-btn {
+    width: 100%; margin-top: 22px; padding: 15px; background: var(--black); color: var(--white); border: none;
+    border-radius: 5px; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800;
+    letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background .15s;
+  }
+  .login-btn:hover { background: var(--gold); }
+  .login-btn:disabled { opacity: .6; cursor: default; }
+  .login-error { color: var(--red); font-size: 13px; margin-top: 16px; min-height: 18px; }
+
+  /* SIDEBAR */
+  aside {
+    width: 220px; background: var(--black); color: var(--white);
+    display: flex; flex-direction: column; padding: 28px 0 32px;
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 50;
+  }
+  .sidebar-brand { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 16px; }
+  .sidebar-brand .name {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 900;
+    letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.25;
+  }
+  .sidebar-brand .name span { color: var(--gold); }
+  .sidebar-brand .tag { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 4px; letter-spacing: 0.06em; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 24px; cursor: pointer;
+    transition: background 0.15s; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55);
+    border-left: 3px solid transparent; text-decoration: none; background: none; border-top:none; border-right:none; border-bottom:none; width:100%; text-align:left;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+  .nav-item.active { background: rgba(168,137,42,0.15); color: var(--gold-light); border-left-color: var(--gold); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-count { margin-left: auto; background: var(--gold); color: var(--black); font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 10px; min-width: 18px; text-align: center; }
+  .nav-count.hidden { display: none; }
+
+  .sidebar-footer { margin-top: auto; padding: 0 24px; display: flex; flex-direction: column; gap: 10px; }
+  .donate-link {
+    display: block; text-align: center; background: var(--gold); color: var(--black);
+    font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 800;
+    letter-spacing: 0.1em; text-transform: uppercase; padding: 11px; border-radius: 3px;
+    text-decoration: none; transition: background 0.15s;
+  }
+  .donate-link:hover { background: var(--gold-light); }
+  .page-link {
+    display: block; text-align: center; background: none; color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.25); font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 9px; border-radius: 3px; text-decoration: none; transition: all 0.15s;
+  }
+  .page-link:hover { border-color: var(--gold); color: var(--gold-light); }
+  .logout-link {
+    text-align: center; background: none; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.2);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 9px; border-radius: 3px;
+    cursor: pointer; transition: all .15s;
+  }
+  .logout-link:hover { color: var(--white); border-color: rgba(255,255,255,0.5); }
+
+  /* MAIN */
+  main { margin-left: 220px; flex: 1; }
+  .topbar {
+    background: var(--white); border-bottom: 1px solid var(--border); padding: 18px 36px;
+    display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40;
+  }
+  .topbar h1 {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .menu-btn {
+    display: none; background: none; border: none; cursor: pointer;
+    font-size: 24px; line-height: 1; padding: 4px 6px; color: var(--black);
+  }
+  .nav-backdrop {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 49;
+  }
+  .nav-backdrop.show { display: block; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .date-badge { font-size: 12px; color: var(--gray); background: var(--gray-light); padding: 6px 12px; border-radius: 3px; border: 1px solid var(--border); }
+  .btn {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 16px;
+    border: 1.5px solid var(--black); background: transparent; border-radius: 3px; cursor: pointer; transition: all 0.15s;
+  }
+  .btn:hover { background: var(--black); color: var(--white); }
+  .btn.gold { background: var(--gold); border-color: var(--gold); color: white; }
+  .btn.gold:hover { background: var(--gold-light); }
+
+  .content { padding: 28px 36px 60px; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* STAT CARDS */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 22px 20px; position: relative; overflow: hidden; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gold); }
+  .stat-card.blue::before { background: var(--blue); }
+  .stat-card.green::before { background: var(--green); }
+  .stat-card .label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray); margin-bottom: 8px; }
+  .stat-card .value { font-family: 'Barlow Condensed', sans-serif; font-size: 34px; font-weight: 900; line-height: 1; }
+  .stat-card .value.gold { color: var(--gold); }
+  .stat-card .value.blue { color: var(--blue); }
+  .stat-card .sub { font-size: 11px; margin-top: 6px; color: var(--gray); }
+
+  .panel { background: var(--white); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+  .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
+  .panel-action { font-size: 11px; font-weight: 700; color: var(--gold); cursor: pointer; letter-spacing: 0.06em; text-transform: uppercase; background: none; border: none; padding: 0; }
+
+  .flow-row { display: flex; align-items: center; gap: 0; padding: 28px 20px; overflow-x: auto; }
+  .flow-step { flex: 1; min-width: 140px; text-align: center; padding: 0 8px; }
+  .flow-icon { font-size: 28px; margin-bottom: 8px; }
+  .flow-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+  .flow-val { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; color: var(--gold); }
+  .flow-arrow { font-size: 20px; color: var(--border); flex-shrink: 0; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left; padding: 9px 16px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray);
+    border-bottom: 1px solid var(--border); background: var(--gray-light); white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--gray-light); }
+  td { padding: 11px 16px; vertical-align: middle; }
+  .name-cell { font-weight: 600; }
+  .sub-cell { font-size: 11px; color: var(--gray); margin-top: 2px; }
+  .amt-cell { font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 800; }
+  .empty-row td { text-align: center; color: var(--gray); font-size: 13px; padding: 28px 16px; font-style: italic; }
+
+  .badge { display: inline-block; padding: 3px 9px; border-radius: 2px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+  .badge.mentorship { background: var(--gold-pale); color: var(--gold); }
+  .badge.sports { background: var(--blue-pale); color: var(--blue); }
+  .badge.monthly { background: #E8F0FE; color: #3B5BDB; }
+  .badge.annual { background: var(--green-pale); color: var(--green); }
+  .badge.onetime, .badge.one-time { background: var(--gray-light); color: var(--gray); }
+  .badge.funded { background: var(--green-pale); color: var(--green); }
+  .badge.pending { background: #FFF4E0; color: #B8860B; }
+  .badge.active-status { background: var(--green-pale); color: var(--green); }
+  .badge.applied { background: var(--gray-light); color: var(--gray); }
+  .badge.complete { background: var(--blue-pale); color: var(--blue); }
+  .badge.needs_review { background: #FFF4E0; color: #B8860B; }
+  .badge.reviewed { background: var(--blue-pale); color: var(--blue); }
+  .badge.approved { background: var(--green-pale); color: var(--green); }
+  .badge.denied { background: var(--red-pale); color: var(--red); }
+  .badge.yes { background: var(--green-pale); color: var(--green); }
+  .badge.no { background: var(--gray-light); color: var(--gray); }
+
+  .progress-track { background: var(--gray-light); border-radius: 99px; height: 6px; overflow: hidden; width: 80px; display: inline-block; vertical-align: middle; margin-right: 6px; }
+  .progress-fill { height: 100%; background: var(--blue); border-radius: 99px; }
+
+  .programs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; padding: 20px; }
+  .program-card { border: 1.5px solid var(--border); border-radius: 6px; padding: 20px; transition: border-color 0.15s; }
+  .program-card:hover { border-color: var(--gold); }
+  .program-card.lymf-operated { border-color: var(--gold); background: var(--gold-pale); }
+  .program-type-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; white-space: nowrap; }
+  .program-type-tag.owned { background: var(--gold); color: white; }
+  .program-type-tag.partner { background: var(--gray-light); color: var(--gray); }
+  .program-card .pc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .program-card .pc-name { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 0.03em; }
+  .program-card .pc-coach { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .program-card .pc-pricing { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+  .price-chip { background: var(--gray-light); border-radius: 3px; padding: 5px 10px; font-size: 11px; font-weight: 600; }
+  .program-card .pc-stats { display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--gray); }
+  .program-card .pc-stats strong { color: var(--black); font-size: 13px; }
+
+  .board-card { border: 1.5px solid var(--border); border-radius: 6px; padding: 20px; text-align: center; transition: border-color 0.15s; }
+  .board-card:hover { border-color: var(--gold); }
+  .board-card .bc-photo { width: 76px; height: 76px; border-radius: 50%; object-fit: cover; margin: 0 auto 12px; display: block; background: var(--gray-light); border: 2px solid var(--gold-pale); }
+  .board-card .bc-name { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 0.03em; }
+  .board-card .bc-title { font-size: 11px; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+  .board-card .bc-contact { font-size: 11px; color: var(--gray); margin-top: 8px; }
+  .board-card .bc-bio { font-size: 12px; color: var(--black); margin-top: 12px; text-align: left; line-height: 1.5; max-height: 90px; overflow-y: auto; padding-top: 12px; border-top: 1px solid var(--border); }
+  .board-card .bc-sig { font-size: 10px; color: var(--gray); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .board-card .bc-sig strong { color: var(--green); }
+
+  .inline-form { padding: 20px; display: none; border-top: 1px solid var(--border); background: var(--gray-light); }
+  .inline-form.show { display: block; }
+  .iform-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 10px; }
+  .iform-row input, .iform-row select {
+    padding: 9px 11px; border: 1.5px solid var(--border); border-radius: 4px; font-size: 13px; font-family: 'Inter', sans-serif; outline: none;
+  }
+  .iform-row input:focus, .iform-row select:focus { border-color: var(--gold); }
+  .iform-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); margin-bottom: 4px; display: block; }
+
+  .mini-btn { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 12px; border-radius: 3px; cursor: pointer; border: none; }
+  .mini-btn.approve { background: var(--green); color: white; }
+  .mini-btn.approve:hover { background: #226240; }
+  .mini-btn.review { background: var(--gray-light); color: var(--black); border: 1px solid var(--border); margin-right: 6px; }
+  .mini-btn.review:hover { background: var(--border); }
+  .mini-btn.deny { background: var(--red); color: white; margin-left: 6px; }
+  .mini-btn.deny:hover { background: #8f2d22; }
+  .mini-btn.undo { background: var(--gray-light); color: var(--black); border: 1px solid var(--border); }
+  .mini-btn.undo:hover { background: var(--border); }
+
+  @media (max-width: 900px) {
+    aside { transform: translateX(-100%); transition: transform 0.25s ease; box-shadow: 2px 0 16px rgba(0,0,0,0.3); }
+    aside.open { transform: translateX(0); }
+    main { margin-left: 0; }
+    .menu-btn { display: block; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .content { padding: 20px 16px 40px; }
+    .topbar { padding: 14px 16px; }
+    .flow-row { flex-direction: column; gap: 12px; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN GATE ============ -->
+<div id="loginGate">
+  <div class="login-card">
+    <div class="lname">Leave Your <span>Mark</span></div>
+    <div class="ltag">Foundation · Admin</div>
+    <label for="login-email">Email</label>
+    <input id="login-email" type="email" placeholder="you@email.com" autocomplete="username">
+    <label for="login-password">Password</label>
+    <input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password">
+    <button class="login-btn" id="loginBtn">Sign In</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div class="layout" id="appRoot" style="display:none;">
+
+<aside>
+  <div class="sidebar-brand">
+    <div class="name">Leave Your <span>Mark</span></div>
+    <div class="tag">Foundation · Admin</div>
+  </div>
+
+  <button class="nav-item active" data-view="overview" onclick="showView('overview', this)">
+    <span class="nav-icon">📊</span><span>Overview</span>
+  </button>
+  <button class="nav-item" data-view="applications" onclick="showView('applications', this)">
+    <span class="nav-icon">📝</span><span>Applications</span><span class="nav-count hidden" id="appsCount">0</span>
+  </button>
+  <button class="nav-item" data-view="fund" onclick="showView('fund', this)">
+    <span class="nav-icon">🏆</span><span>Opportunity Fund</span>
+  </button>
+  <button class="nav-item" data-view="programs" onclick="showView('programs', this)">
+    <span class="nav-icon">🏀</span><span>Programs</span>
+  </button>
+  <button class="nav-item" data-view="donors" onclick="showView('donors', this)">
+    <span class="nav-icon">💰</span><span>Donor Log</span>
+  </button>
+  <button class="nav-item" data-view="volunteers" onclick="showView('volunteers', this)">
+    <span class="nav-icon">🙋</span><span>Volunteers</span><span class="nav-count hidden" id="volunteersCount">0</span>
+  </button>
+  <button class="nav-item" data-view="board" onclick="showView('board', this)">
+    <span class="nav-icon">🪪</span><span>Board Members</span><span class="nav-count hidden" id="boardCount">0</span>
+  </button>
+
+  <div class="sidebar-footer">
+    <a class="donate-link" href="Donate.html">View Donation Page ↗</a>
+    <a class="page-link" href="volunteer.html">Volunteer Page ↗</a>
+    <a class="page-link" href="board-signup.html">Board Sign-Up Page ↗</a>
+    <button class="logout-link" onclick="doLogout()">Log Out</button>
+  </div>
+</aside>
+
+<div class="nav-backdrop" id="navBackdrop" onclick="closeNav()"></div>
+
+<main>
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="toggleNav()" aria-label="Menu">☰</button>
+      <h1 id="pageTitle">Overview</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="date-badge" id="dateBadge">June 2026</div>
+      <button class="btn" onclick="exportData()">Export CSV</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ============ OVERVIEW ============ -->
+    <div class="view active" id="view-overview">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="label">Total Raised (All Funds)</div>
+          <div class="value gold" id="ov-total">$0</div>
+          <div class="sub">across all programs</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="label">Opportunity Fund Balance</div>
+          <div class="value blue" id="ov-fund-balance">$0</div>
+          <div class="sub">available to allocate</div>
+        </div>
+        <div class="stat-card green">
+          <div class="label">Children Currently Funded</div>
+          <div class="value" id="ov-kids-funded">0</div>
+          <div class="sub">across all programs</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Applications to Review</div>
+          <div class="value" id="ov-apps">0</div>
+          <div class="sub">awaiting your decision</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">How Money Moves — The System</div></div>
+        <div class="flow-row">
+          <div class="flow-step">
+            <div class="flow-icon">💳</div>
+            <div class="flow-label">Donations In</div>
+            <div class="flow-val" id="flow-donations">$0</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon">🏆</div>
+            <div class="flow-label">Opportunity Fund</div>
+            <div class="flow-val" id="flow-fund">$0</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon">👦</div>
+            <div class="flow-label">Allocated to Children</div>
+            <div class="flow-val" id="flow-allocated">$0</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon">🏀</div>
+            <div class="flow-label">Paid to Programs</div>
+            <div class="flow-val" id="flow-paid">$0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Recent Donations</div></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Donor</th><th>Amount</th><th>Fund</th><th>Date</th></tr></thead>
+            <tbody id="ov-recent-donors"></tbody>
+          </table></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Funding Pipeline</div></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Child</th><th>Program</th><th>Status</th></tr></thead>
+            <tbody id="ov-pipeline"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ APPLICATIONS ============ -->
+    <div class="view" id="view-applications">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Scholarship Applications</div>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>Child</th><th>Age</th><th>Program</th><th>Free/Reduced Lunch</th>
+            <th>Guardian</th><th>Contact</th><th>Received</th><th>Status</th><th>Action</th>
+          </tr></thead>
+          <tbody id="appsTable"></tbody>
+        </table></div>
+      </div>
+
+      <div class="panel" id="appDetailPanel" style="display:none;">
+        <div class="panel-header"><div class="panel-title">Application Detail</div>
+          <button class="panel-action" onclick="closeAppDetail()">Close</button>
+        </div>
+        <div style="padding:20px;" id="appDetailBody"></div>
+      </div>
+    </div>
+
+    <!-- ============ OPPORTUNITY FUND ============ -->
+    <div class="view" id="view-fund">
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="label">Fund Balance</div>
+          <div class="value blue" id="fund-balance">$0</div>
+          <div class="sub">ready to allocate</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Total Raised for Fund</div>
+          <div class="value gold" id="fund-raised">$0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="label">Total Allocated</div>
+          <div class="value" id="fund-allocated">$0</div>
+          <div class="sub">to sponsored children</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Children Sponsored</div>
+          <div class="value" id="fund-kid-count">0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Sponsored Children Roster</div>
+          <button class="panel-action" onclick="toggleForm('kidForm')">+ Add Child / Scholarship</button>
+        </div>
+        <div class="inline-form" id="kidForm">
+          <div class="iform-row">
+            <div><span class="iform-label">First Name</span><input id="k-first" placeholder="First"></div>
+            <div><span class="iform-label">Last Initial</span><input id="k-last" placeholder="L." maxlength="3"></div>
+            <div><span class="iform-label">Program</span><select id="k-program"></select></div>
+            <div><span class="iform-label">Package</span><select id="k-package"></select></div>
+          </div>
+          <div class="iform-row">
+            <div><span class="iform-label">Status</span>
+              <select id="k-status">
+                <option value="applied">Applied</option>
+                <option value="pending">Pending Review</option>
+                <option value="funded" selected>Funded</option>
+                <option value="active-status">Active</option>
+                <option value="complete">Complete</option>
+              </select>
+            </div>
+            <div><span class="iform-label">Sessions Total</span><input id="k-sessions" type="number" placeholder="6" value="6"></div>
+            <div><span class="iform-label">Sessions Used</span><input id="k-used" type="number" placeholder="0" value="0"></div>
+            <div style="display:flex; align-items:flex-end;"><button class="btn gold" style="width:100%;" onclick="addKid()">Add to Roster</button></div>
+          </div>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Child</th><th>Program</th><th>Package</th><th>Sessions</th><th>Status</th><th>Cost</th></tr></thead>
+          <tbody id="kidsTable"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ============ PROGRAMS ============ -->
+    <div class="view" id="view-programs">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Partner Programs</div>
+          <button class="panel-action" onclick="toggleForm('programForm')">+ Add Program</button>
+        </div>
+        <div class="inline-form" id="programForm">
+          <div class="iform-row">
+            <div><span class="iform-label">Program Name</span><input id="p-name" placeholder="HoopNerdz Academy"></div>
+            <div><span class="iform-label">Coach / Lead</span><input id="p-coach" placeholder="Coach Mark"></div>
+            <div><span class="iform-label">Sport / Category</span><input id="p-sport" placeholder="Basketball"></div>
+          </div>
+          <div class="iform-row">
+            <div><span class="iform-label">Package 1 (label=price)</span><input id="p-pkg1" placeholder="1 session=40"></div>
+            <div><span class="iform-label">Package 2</span><input id="p-pkg2" placeholder="4 sessions=140"></div>
+            <div><span class="iform-label">Package 3</span><input id="p-pkg3" placeholder="6 sessions=200"></div>
+            <div style="display:flex; align-items:flex-end;"><button class="btn gold" style="width:100%;" onclick="addProgram()">Add Program</button></div>
+          </div>
+        </div>
+        <div class="programs-grid" id="programsGrid"></div>
+      </div>
+    </div>
+
+    <!-- ============ DONOR LOG ============ -->
+    <div class="view" id="view-donors">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Donor Log</div>
+          <button class="panel-action" onclick="toggleForm('donorForm')">+ Add Donation</button>
+        </div>
+        <div class="inline-form" id="donorForm">
+          <div class="iform-row">
+            <div><span class="iform-label">First Name</span><input id="d-first" placeholder="First"></div>
+            <div><span class="iform-label">Last Name</span><input id="d-last" placeholder="Last"></div>
+            <div><span class="iform-label">Email</span><input id="d-email" placeholder="email@example.com"></div>
+            <div><span class="iform-label">Phone</span><input id="d-phone" placeholder="(513) 555-0100"></div>
+          </div>
+          <div class="iform-row">
+            <div><span class="iform-label">Amount</span><input id="d-amt" type="number" placeholder="100"></div>
+            <div><span class="iform-label">Fund</span>
+              <select id="d-fund"><option value="mentorship">Mentorship Program</option><option value="sports">Sports Inclusion</option></select>
+            </div>
+            <div><span class="iform-label">Type</span>
+              <select id="d-type"><option value="one-time">One-Time</option><option value="monthly">Monthly</option><option value="annual">Annual</option></select>
+            </div>
+            <div><span class="iform-label">Method</span>
+              <select id="d-method"><option>Card</option><option>Cash App</option><option>Check</option><option>Cash</option></select>
+            </div>
+          </div>
+          <div class="iform-row">
+            <div style="display:flex; align-items:flex-end;"><button class="btn gold" style="width:100%;" onclick="addDonor()">Add Donation</button></div>
+          </div>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Donor</th><th>Contact</th><th>Amount</th><th>Fund</th><th>Type</th><th>Date</th><th>Method</th><th>Tax Receipt</th><th>Receipt Sent</th></tr></thead>
+          <tbody id="donorTable"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ============ VOLUNTEERS ============ -->
+    <div class="view" id="view-volunteers">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Volunteer Sign-Ups</div>
+          <a class="panel-action" href="volunteer.html" target="_blank" style="text-decoration:none;">Open Volunteer Page ↗</a>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>Name</th><th>Contact</th><th>Availability</th><th>Interests</th><th>Notes</th><th>Submitted</th>
+          </tr></thead>
+          <tbody id="volunteersTable"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ============ BOARD MEMBERS ============ -->
+    <div class="view" id="view-board">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Board Members</div>
+          <a class="panel-action" href="board-signup.html" target="_blank" style="text-decoration:none;">Open Sign-Up Page ↗</a>
+        </div>
+        <div class="programs-grid" id="boardGrid"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+
+<!-- TAX RECEIPT MODAL -->
+<div id="receiptModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:8px; padding:32px; max-width:600px; width:90%; max-height:80vh; overflow-y:auto; position:relative;">
+    <button onclick="closeReceipt()" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:20px; cursor:pointer;">✕</button>
+    <div style="font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:16px;">Tax Receipt — Copy & Send</div>
+    <div style="font-size:11px; color:var(--gray); margin-bottom:12px; text-transform:uppercase; font-weight:700; letter-spacing:0.08em;">Send to: <span id="receipt-email" style="color:var(--gold);"></span></div>
+    <div style="font-size:11px; color:var(--gray); margin-bottom:16px;">Subject: <strong>Thank You for Supporting Leave Your Mark Foundation</strong></div>
+    <textarea id="receiptText" style="width:100%; height:320px; font-size:13px; font-family:'Inter',sans-serif; border:1.5px solid var(--border); border-radius:4px; padding:16px; resize:none; line-height:1.6;"></textarea>
+    <div style="display:flex; gap:12px; margin-top:16px;">
+      <button class="btn gold" onclick="copyReceipt()" style="flex:1;">Copy to Clipboard</button>
+      <button class="btn" onclick="markReceiptSent()" style="flex:1;">Mark as Sent</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDpzZKJ09Le_MC1oVoi4bkBaGfbrMKilus",
+  authDomain: "lymf-foundation.firebaseapp.com",
+  projectId: "lymf-foundation",
+  storageBucket: "lymf-foundation.firebasestorage.app",
+  messagingSenderId: "577499898060",
+  appId: "1:577499898060:web:42b57bc24b58ce941ae269"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// ===== STATE =====
+let donors = [];
+let kids = [];
+let applications = [];
+let volunteers = [];
+let boardMembers = [];
+let listenersStarted = false;
+
+let programs = [
+  { name: 'LYMF Mentorship Program', coach: 'Coach Mark', sport: 'Mentorship', type: 'lymf-operated',
+    packages: [ { label: '1 Month', price: 100 }, { label: '3 Months', price: 250 }, { label: '6 Months', price: 450 }, { label: '1 Year', price: 800 } ] },
+  { name: 'HoopNerdz Academy', coach: 'Coach Mark', sport: 'Basketball', type: 'partner',
+    packages: [ { label: '1 Session', price: 40 }, { label: '4 Sessions', price: 140 }, { label: '6 Sessions', price: 200 } ] },
+  { name: 'Black Ops Basketball League', coach: 'Coach Mark', sport: 'Basketball', type: 'partner',
+    packages: [ { label: 'Registration', price: 75 }, { label: 'Season', price: 150 } ] },
+  { name: 'CSL Charter School League', coach: 'Coach Mark', sport: 'Basketball', type: 'partner',
+    packages: [ { label: 'Registration', price: 75 }, { label: 'Season', price: 150 } ] }
+];
+
+const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+
+// ===== AUTH =====
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById('loginGate').style.display = 'none';
+    document.getElementById('appRoot').style.display = 'flex';
+    if (!listenersStarted) { startListeners(); listenersStarted = true; }
+  } else {
+    document.getElementById('loginGate').style.display = 'flex';
+    document.getElementById('appRoot').style.display = 'none';
+  }
+});
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = 'Enter your email and password.'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch (e) {
+    errEl.textContent = 'Sign-in failed. Check your email and password.';
+    console.error(e);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+async function doLogout() { await signOut(auth); }
+
+// ===== LISTENERS =====
+function startListeners() {
+  onSnapshot(collection(db, 'donations'), (snap) => {
+    donors = snap.docs.map(ds => {
+      const d = ds.data();
+      return {
+        id: ds.id,
+        name: d.anonymous ? 'Anonymous' : `${d.firstName || ''} ${d.lastName || ''}`.trim(),
+        email: d.email || '—',
+        phone: d.phone || d.phoneNumber || '',
+        amt: Number(d.amount) || 0,
+        fund: d.fund === 'Sports Inclusion' ? 'sports' : 'mentorship',
+        type: (d.frequency || 'One-Time').toLowerCase().replace(/[\s-]/g, ''),
+        date: fmtDate(d.timestamp),
+        method: d.paymentMethod || 'Card',
+        taxReceiptRequested: d.taxReceiptRequested || false,
+        receiptSent: d.receiptSent || false
+      };
+    });
+    renderAll();
+  }, (err) => console.error('donations listener:', err));
+
+  onSnapshot(collection(db, 'scholarships'), (snap) => {
+    kids = snap.docs.map(ds => {
+      const k = ds.data();
+      return {
+        id: ds.id,
+        name: `${k.childFirstName || ''} ${k.childLastInitial || ''}`.trim(),
+        program: k.program || '—',
+        package: k.package || '—',
+        cost: Number(k.cost) || 0,
+        sessionsTotal: Number(k.sessionsTotal) || 0,
+        sessionsUsed: Number(k.sessionsUsed) || 0,
+        status: k.status || 'applied'
+      };
+    });
+    renderAll();
+  }, (err) => console.error('scholarships listener:', err));
+
+  onSnapshot(collection(db, 'scholarshipApplications'), (snap) => {
+    applications = snap.docs.map(ds => {
+      const a = ds.data();
+      return {
+        id: ds.id,
+        childFirst: a.childFirst || '',
+        childLast: a.childLast || '',
+        childName: a.childName || `${a.childFirst || ''} ${a.childLast || ''}`.trim(),
+        age: a.childAge || '',
+        grade: a.childGrade || '',
+        school: a.childSchool || '',
+        guardianName: a.guardianName || '',
+        relationship: a.relationship || '',
+        email: a.guardianEmail || '',
+        phone: a.guardianPhone || '',
+        city: a.city || '',
+        lunch: a.lunchEligible || '',
+        household: a.householdSize || '',
+        program: a.program || '',
+        story: a.story || '',
+        referral: a.referral || '',
+        status: a.status || 'needs_review',
+        date: fmtDate(a.timestamp)
+      };
+    });
+    renderAll();
+  }, (err) => console.error('applications listener:', err));
+
+  onSnapshot(collection(db, 'volunteers'), (snap) => {
+    volunteers = snap.docs.map(ds => {
+      const v = ds.data();
+      return {
+        id: ds.id,
+        name: v.fullName || '—',
+        email: v.email || '—',
+        phone: v.phone || '',
+        availability: v.availability || '—',
+        interests: Array.isArray(v.interests) ? v.interests : [],
+        notes: v.notes || '',
+        date: v.submittedAt && v.submittedAt.toDate ? fmtDate(v.submittedAt.toDate().toISOString()) : '—'
+      };
+    });
+    renderAll();
+  }, (err) => console.error('volunteers listener:', err));
+
+  onSnapshot(collection(db, 'boardMembers'), (snap) => {
+    boardMembers = snap.docs.map(ds => {
+      const b = ds.data();
+      return {
+        id: ds.id,
+        name: b.fullName || '—',
+        title: b.title || '',
+        email: b.email || '—',
+        phone: b.phone || '',
+        bio: b.bio || '',
+        photoData: b.photoData || '',
+        signature: b.signature || '',
+        signedDate: b.signedDate ? fmtDate(b.signedDate) : '',
+        agreementAccepted: !!b.agreementAccepted
+      };
+    });
+    renderAll();
+  }, (err) => console.error('boardMembers listener:', err));
+}
+
+// ===== NAV =====
+function showView(viewId, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + viewId).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const titles = { overview: 'Overview', applications: 'Applications', fund: 'Opportunity Fund', programs: 'Programs', donors: 'Donor Log', volunteers: 'Volunteers', board: 'Board Members' };
+  document.getElementById('pageTitle').textContent = titles[viewId] || 'Overview';
+  closeNav();
+}
+function toggleNav() {
+  document.querySelector('aside').classList.toggle('open');
+  document.getElementById('navBackdrop').classList.toggle('show');
+}
+function closeNav() {
+  document.querySelector('aside').classList.remove('open');
+  document.getElementById('navBackdrop').classList.remove('show');
+}
+function toggleForm(id) { document.getElementById(id).classList.toggle('show'); }
+
+// ===== CALC =====
+function calc() {
+  const totalRaised = donors.reduce((s, d) => s + d.amt, 0);
+  const sportsTotal = donors.filter(d => d.fund === 'sports').reduce((s, d) => s + d.amt, 0);
+  const allocated = kids.reduce((s, k) => s + k.cost, 0);
+  const fundBalance = sportsTotal - allocated;
+  return { totalRaised, sportsTotal, allocated, fundBalance };
+}
+function statusLabel(s) {
+  return { applied:'Applied', pending:'Pending', funded:'Funded', 'active-status':'Active', complete:'Complete',
+           needs_review:'Needs Review', reviewed:'Reviewed', approved:'Approved', denied:'Denied' }[s] || s;
+}
+
+// ===== OVERVIEW =====
+function renderOverview() {
+  const c = calc();
+  const reviewCount = applications.filter(a => a.status === 'needs_review').length;
+  document.getElementById('ov-total').textContent = '$' + c.totalRaised.toLocaleString();
+  document.getElementById('ov-fund-balance').textContent = '$' + c.fundBalance.toLocaleString();
+  document.getElementById('ov-kids-funded').textContent = kids.filter(k => ['funded','active-status'].includes(k.status)).length;
+  document.getElementById('ov-apps').textContent = reviewCount;
+
+  document.getElementById('flow-donations').textContent = '$' + c.totalRaised.toLocaleString();
+  document.getElementById('flow-fund').textContent = '$' + c.sportsTotal.toLocaleString();
+  document.getElementById('flow-allocated').textContent = '$' + c.allocated.toLocaleString();
+  const paid = kids.filter(k => k.status === 'complete' || k.status === 'active-status')
+    .reduce((s,k) => s + (k.cost * (k.sessionsUsed / Math.max(k.sessionsTotal,1))), 0);
+  document.getElementById('flow-paid').textContent = '$' + Math.round(paid).toLocaleString();
+
+  const recent = [...donors].slice(-5).reverse();
+  document.getElementById('ov-recent-donors').innerHTML = recent.length ? recent.map(d => `
+    <tr><td class="name-cell">${d.name}</td><td class="amt-cell">$${d.amt.toLocaleString()}</td>
+    <td><span class="badge ${d.fund}">${d.fund === 'mentorship' ? 'Mentorship' : 'Sports Inclusion'}</span></td>
+    <td style="font-size:12px;color:var(--gray);">${d.date}</td></tr>`).join('')
+    : '<tr class="empty-row"><td colspan="4">No donations yet.</td></tr>';
+
+  document.getElementById('ov-pipeline').innerHTML = kids.length ? kids.map(k => `
+    <tr><td class="name-cell">${k.name}</td><td style="font-size:12px;">${k.program}</td>
+    <td><span class="badge ${k.status}">${statusLabel(k.status)}</span></td></tr>`).join('')
+    : '<tr class="empty-row"><td colspan="3">No sponsored children yet.</td></tr>';
+}
+
+// ===== APPLICATIONS =====
+function renderApplications() {
+  const reviewCount = applications.filter(a => a.status === 'needs_review').length;
+  const countEl = document.getElementById('appsCount');
+  countEl.textContent = reviewCount;
+  countEl.classList.toggle('hidden', reviewCount === 0);
+
+  const rank = s => (s === 'needs_review' ? 0 : s === 'denied' ? 2 : 1);
+  const sorted = [...applications].sort((a,b) => rank(a.status) - rank(b.status));
+  document.getElementById('appsTable').innerHTML = sorted.length ? sorted.map(a => `
+    <tr${a.status === 'denied' ? ' style="opacity:0.55;"' : ''}>
+      <td><div class="name-cell">${a.childName || '—'}</div><div class="sub-cell">${a.school || ''}</div></td>
+      <td>${a.age || '—'}</td>
+      <td style="font-size:12px;">${a.program || '—'}</td>
+      <td>${a.lunch ? `<span class="badge ${a.lunch.toLowerCase() === 'yes' ? 'yes' : 'no'}">${a.lunch}</span>` : '—'}</td>
+      <td><div style="font-size:12px;">${a.guardianName || '—'}</div><div class="sub-cell">${a.relationship || ''}</div></td>
+      <td><div style="font-size:12px;">${a.email || ''}</div><div class="sub-cell">${a.phone || ''}</div></td>
+      <td style="font-size:12px;color:var(--gray);">${a.date}</td>
+      <td><span class="badge ${a.status}">${statusLabel(a.status)}</span></td>
+      <td style="white-space:nowrap;">
+        <button class="mini-btn review" onclick="viewApp('${a.id}')">View</button>
+        ${a.status === 'denied'
+          ? `<button class="mini-btn undo" onclick="undoDeny('${a.id}')">Undo</button>`
+          : a.status === 'approved'
+            ? ''
+            : `<button class="mini-btn approve" onclick="approveApplication('${a.id}')">Approve</button><button class="mini-btn deny" onclick="denyApplication('${a.id}')">Deny</button>`}
+      </td>
+    </tr>`).join('')
+    : '<tr class="empty-row"><td colspan="9">No applications yet. Share your apply link to start receiving them.</td></tr>';
+}
+
+function viewApp(id) {
+  const a = applications.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('appDetailPanel').style.display = 'block';
+  document.getElementById('appDetailBody').innerHTML = `
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px;">
+      <div><div class="iform-label">Child</div><div>${a.childName} (age ${a.age || '—'}, grade ${a.grade || '—'})</div></div>
+      <div><div class="iform-label">School</div><div>${a.school || '—'}</div></div>
+      <div><div class="iform-label">Program</div><div>${a.program || '—'}</div></div>
+      <div><div class="iform-label">Free/Reduced Lunch</div><div>${a.lunch || '—'}</div></div>
+      <div><div class="iform-label">Household Size</div><div>${a.household || '—'}</div></div>
+      <div><div class="iform-label">Guardian</div><div>${a.guardianName || '—'} (${a.relationship || '—'})</div></div>
+      <div><div class="iform-label">Email</div><div>${a.email || '—'}</div></div>
+      <div><div class="iform-label">Phone</div><div>${a.phone || '—'}</div></div>
+      <div><div class="iform-label">City / Neighborhood</div><div>${a.city || '—'}</div></div>
+      <div><div class="iform-label">Heard About Us</div><div>${a.referral || '—'}</div></div>
+    </div>
+    <div style="margin-top:16px;"><div class="iform-label">Their Story</div>
+      <div style="background:var(--gray-light); border-radius:6px; padding:14px; font-size:14px; line-height:1.6; margin-top:6px;">${a.story || '—'}</div>
+    </div>`;
+  document.getElementById('appDetailPanel').scrollIntoView({ behavior: 'smooth' });
+}
+function closeAppDetail() { document.getElementById('appDetailPanel').style.display = 'none'; }
+
+async function approveApplication(id) {
+  const a = applications.find(x => x.id === id);
+  if (!a) return;
+  if (!confirm(`Approve ${a.childName} and add them to the Sponsored Children roster?`)) return;
+  try {
+    await addDoc(collection(db, 'scholarships'), {
+      childFirstName: a.childFirst,
+      childLastInitial: (a.childLast || '').charAt(0),
+      program: a.program,
+      package: '—',
+      cost: 0,
+      sessionsTotal: 6,
+      sessionsUsed: 0,
+      status: 'funded',
+      fromApplication: id
+    });
+    await updateDoc(doc(db, 'scholarshipApplications', id), { status: 'approved' });
+  } catch (e) {
+    alert('Could not approve. Check your connection and try again.');
+    console.error(e);
+  }
+}
+
+async function denyApplication(id) {
+  const a = applications.find(x => x.id === id);
+  if (!a) return;
+  if (!confirm(`Deny ${a.childName}'s application?\n\nThey won't be added to the roster. Nothing is deleted — you can undo this anytime.`)) return;
+  try {
+    await updateDoc(doc(db, 'scholarshipApplications', id), { status: 'denied' });
+  } catch (e) {
+    alert('Could not update. Check your connection and try again.');
+    console.error(e);
+  }
+}
+
+async function undoDeny(id) {
+  const a = applications.find(x => x.id === id);
+  if (!a) return;
+  try {
+    await updateDoc(doc(db, 'scholarshipApplications', id), { status: 'needs_review' });
+  } catch (e) {
+    alert('Could not update. Check your connection and try again.');
+    console.error(e);
+  }
+}
+
+// ===== FUND =====
+function renderFund() {
+  const c = calc();
+  document.getElementById('fund-balance').textContent = '$' + c.fundBalance.toLocaleString();
+  document.getElementById('fund-raised').textContent = '$' + c.sportsTotal.toLocaleString();
+  document.getElementById('fund-allocated').textContent = '$' + c.allocated.toLocaleString();
+  document.getElementById('fund-kid-count').textContent = kids.length;
+
+  const progSel = document.getElementById('k-program');
+  if (progSel && progSel.options.length === 0) {
+    progSel.innerHTML = programs.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+    progSel.onchange = updatePackageSelect;
+    updatePackageSelect();
+  }
+
+  document.getElementById('kidsTable').innerHTML = kids.length ? kids.map(k => {
+    const pct = Math.round((k.sessionsUsed / Math.max(k.sessionsTotal,1)) * 100);
+    return `<tr>
+      <td class="name-cell">${k.name}</td>
+      <td style="font-size:13px;">${k.program}</td>
+      <td style="font-size:13px;">${k.package}</td>
+      <td><div class="progress-track"><div class="progress-fill" style="width:${pct}%;"></div></div>
+        <span style="font-size:11px;color:var(--gray);">${k.sessionsUsed}/${k.sessionsTotal}</span></td>
+      <td><span class="badge ${k.status}">${statusLabel(k.status)}</span></td>
+      <td class="amt-cell">$${k.cost.toLocaleString()}</td></tr>`;
+  }).join('') : '<tr class="empty-row"><td colspan="6">No sponsored children yet.</td></tr>';
+}
+function updatePackageSelect() {
+  const prog = programs.find(p => p.name === document.getElementById('k-program').value);
+  const pkgSel = document.getElementById('k-package');
+  pkgSel.innerHTML = prog ? prog.packages.map(pk => `<option value="${pk.label}|${pk.price}">${pk.label} — $${pk.price}</option>`).join('') : '';
+}
+async function addKid() {
+  const first = document.getElementById('k-first').value.trim();
+  const last = document.getElementById('k-last').value.trim();
+  const program = document.getElementById('k-program').value;
+  const pkgRaw = document.getElementById('k-package').value;
+  const status = document.getElementById('k-status').value;
+  const sessionsTotal = parseInt(document.getElementById('k-sessions').value) || 1;
+  const sessionsUsed = parseInt(document.getElementById('k-used').value) || 0;
+  if (!first || !program || !pkgRaw) { alert('Please fill in name, program, and package.'); return; }
+  const [pkgLabel, pkgPrice] = pkgRaw.split('|');
+  try {
+    await addDoc(collection(db, 'scholarships'), {
+      childFirstName: first, childLastInitial: last, program, package: pkgLabel,
+      cost: parseFloat(pkgPrice) || 0, sessionsTotal, sessionsUsed, status
+    });
+    document.getElementById('k-first').value = '';
+    document.getElementById('k-last').value = '';
+    document.getElementById('k-sessions').value = '6';
+    document.getElementById('k-used').value = '0';
+    toggleForm('kidForm');
+  } catch (e) { alert('Could not save. Try again.'); console.error(e); }
+}
+
+// ===== PROGRAMS =====
+function renderPrograms() {
+  document.getElementById('programsGrid').innerHTML = programs.map(p => {
+    const inProg = kids.filter(k => k.program === p.name);
+    const totalFunded = inProg.reduce((s,k) => s + k.cost, 0);
+    const isOwned = p.type === 'lymf-operated';
+    return `<div class="program-card ${isOwned ? 'lymf-operated' : ''}">
+      <div class="pc-top">
+        <div><div class="pc-name">${p.name}</div><div class="pc-coach">${p.coach} · ${p.sport}</div></div>
+        <span class="program-type-tag ${isOwned ? 'owned' : 'partner'}">${isOwned ? 'LYMF Operated' : 'Partner'}</span>
+      </div>
+      <div class="pc-pricing">${p.packages.map(pk => `<span class="price-chip">${pk.label}: $${pk.price}</span>`).join('')}</div>
+      <div class="pc-stats"><div><strong>${inProg.length}</strong> children funded</div><div><strong>$${totalFunded.toLocaleString()}</strong> total</div></div>
+    </div>`;
+  }).join('');
+}
+function addProgram() {
+  const name = document.getElementById('p-name').value.trim();
+  const coach = document.getElementById('p-coach').value.trim();
+  const sport = document.getElementById('p-sport').value.trim();
+  const pkgInputs = [document.getElementById('p-pkg1').value, document.getElementById('p-pkg2').value, document.getElementById('p-pkg3').value];
+  if (!name) { alert('Please enter a program name.'); return; }
+  const packages = pkgInputs.filter(Boolean).map(raw => {
+    const [label, price] = raw.split('=');
+    return { label: (label || 'Package').trim(), price: parseFloat(price) || 0 };
+  });
+  programs.push({ name, coach: coach || 'TBD', sport: sport || 'General', type: 'partner', packages: packages.length ? packages : [{ label: 'Standard', price: 50 }] });
+  ['p-name','p-coach','p-sport','p-pkg1','p-pkg2','p-pkg3'].forEach(id => document.getElementById(id).value = '');
+  toggleForm('programForm');
+  renderAll();
+}
+
+// ===== DONORS =====
+let currentReceiptDonor = null;
+function renderDonorTable() {
+  document.getElementById('donorTable').innerHTML = donors.length ? donors.map((d, i) => `
+    <tr>
+      <td><div class="name-cell">${d.name}</div></td>
+      <td><div style="font-size:12px;">${d.email}</div><div class="sub-cell">${d.phone || '—'}</div></td>
+      <td class="amt-cell">$${d.amt.toLocaleString()}</td>
+      <td><span class="badge ${d.fund}">${d.fund === 'mentorship' ? 'Mentorship' : 'Sports Inclusion'}</span></td>
+      <td><span class="badge ${d.type}">${d.type === 'onetime' ? 'One-Time' : d.type.charAt(0).toUpperCase()+d.type.slice(1)}</span></td>
+      <td style="font-size:12px;color:var(--gray);">${d.date}</td>
+      <td style="font-size:12px;">${d.method}</td>
+      <td style="text-align:center;">${d.taxReceiptRequested ? `<button class="panel-action" onclick="openReceipt(${i})" style="color:var(--gold);">View</button>` : '<span style="font-size:11px;color:var(--gray);">No</span>'}</td>
+      <td style="text-align:center;">${d.taxReceiptRequested ? `<span style="font-size:11px; font-weight:700; color:${d.receiptSent ? 'var(--green)' : 'var(--gray)'};">${d.receiptSent ? '✓ Sent' : 'Pending'}</span>` : '—'}</td>
+    </tr>`).join('') : '<tr class="empty-row"><td colspan="9">No donations yet.</td></tr>';
+}
+function openReceipt(index) {
+  const d = donors[index];
+  currentReceiptDonor = index;
+  document.getElementById('receipt-email').textContent = d.email;
+  document.getElementById('receiptText').value = `Hi ${d.name.split(' ')[0]},
+
+Thank you for your generous gift to Leave Your Mark Foundation. Your donation has been received and will go directly toward funding a child's opportunity to participate in sports and mentorship programming.
+
+Donation Details:
+- Donor Name: ${d.name}
+- Donation Amount: $${d.amt.toLocaleString()}
+- Date of Contribution: ${d.date}
+- Purpose: ${d.fund === 'mentorship' ? 'Mentorship Program' : 'Sports Inclusion Fund'}
+- Payment Method: ${d.method}
+
+Leave Your Mark Foundation is a registered 501(c)(3) nonprofit organization (EIN: 84-3485963). No goods or services were provided in exchange for this contribution. This donation is tax-deductible to the extent allowed by law.
+
+Every child deserves a chance. Thank you for helping give them one.
+
+In service,
+Mark Dorris Jr.
+Founder, Leave Your Mark Foundation
+leaveymfoundation@gmail.com`;
+  document.getElementById('receiptModal').style.display = 'flex';
+}
+function closeReceipt() { document.getElementById('receiptModal').style.display = 'none'; currentReceiptDonor = null; }
+function copyReceipt() {
+  navigator.clipboard.writeText(document.getElementById('receiptText').value)
+    .then(() => alert('Copied to clipboard! Paste it into Gmail.'))
+    .catch(() => alert('Copy failed — select the text and copy manually.'));
+}
+async function markReceiptSent() {
+  if (currentReceiptDonor === null) return;
+  const d = donors[currentReceiptDonor];
+  try { await updateDoc(doc(db, 'donations', d.id), { receiptSent: true }); } catch (e) { console.error(e); }
+  closeReceipt();
+}
+async function addDonor() {
+  const first = document.getElementById('d-first').value.trim();
+  const last = document.getElementById('d-last').value.trim();
+  const email = document.getElementById('d-email').value.trim();
+  const phone = document.getElementById('d-phone').value.trim();
+  const amt = parseFloat(document.getElementById('d-amt').value);
+  const fund = document.getElementById('d-fund').value;
+  const type = document.getElementById('d-type').value;
+  const method = document.getElementById('d-method').value;
+  if (!first || !amt) { alert('Please enter at least a name and amount.'); return; }
+  try {
+    await addDoc(collection(db, 'donations'), {
+      timestamp: new Date().toISOString(),
+      firstName: first, lastName: last, email: email || '—', phone: phone || '', amount: amt,
+      fund: fund === 'sports' ? 'Sports Inclusion' : 'Mentorship Program',
+      frequency: type, paymentMethod: method, status: 'confirmed'
+    });
+    ['d-first','d-last','d-email','d-phone','d-amt'].forEach(id => document.getElementById(id).value = '');
+    toggleForm('donorForm');
+  } catch (e) { alert('Could not save. Try again.'); console.error(e); }
+}
+
+// ===== VOLUNTEERS =====
+function renderVolunteers() {
+  const countEl = document.getElementById('volunteersCount');
+  countEl.textContent = volunteers.length;
+  countEl.classList.toggle('hidden', volunteers.length === 0);
+
+  document.getElementById('volunteersTable').innerHTML = volunteers.length ? volunteers.map(v => `
+    <tr>
+      <td class="name-cell">${v.name}</td>
+      <td><div style="font-size:12px;">${v.email}</div><div class="sub-cell">${v.phone}</div></td>
+      <td style="font-size:12px;">${v.availability}</td>
+      <td style="font-size:12px;">${v.interests.length ? v.interests.join(', ') : '—'}</td>
+      <td style="font-size:12px; max-width:220px;">${v.notes || '—'}</td>
+      <td style="font-size:12px;color:var(--gray);">${v.date}</td>
+    </tr>`).join('') : '<tr class="empty-row"><td colspan="6">No volunteer sign-ups yet.</td></tr>';
+}
+
+// ===== BOARD MEMBERS =====
+// Board hierarchy order — lower number = shows first. Anything not matched falls to the end,
+// sorted alphabetically by title so new/uncommon titles still land somewhere sensible.
+const BOARD_RANK = [
+  'founder',
+  'executive director',
+  'president',
+  'chair',
+  'vice president',
+  'treasurer',
+  'secretary',
+  'director of community outreach',
+  'director of marketing',
+  'director'
+];
+
+function boardRank(title) {
+  const t = (title || '').toLowerCase();
+  for (let i = 0; i < BOARD_RANK.length; i++) {
+    if (t.includes(BOARD_RANK[i])) return i;
+  }
+  return BOARD_RANK.length; // unrecognized titles go last
+}
+
+function renderBoardMembers() {
+  const countEl = document.getElementById('boardCount');
+  countEl.textContent = boardMembers.length;
+  countEl.classList.toggle('hidden', boardMembers.length === 0);
+
+  const sorted = [...boardMembers].sort((a, b) => {
+    const rankDiff = boardRank(a.title) - boardRank(b.title);
+    if (rankDiff !== 0) return rankDiff;
+    return (a.title || '').localeCompare(b.title || ''); // stable tiebreaker for equal/unmatched ranks
+  });
+
+  document.getElementById('boardGrid').innerHTML = sorted.length ? sorted.map(b => `
+    <div class="board-card">
+      ${b.photoData ? `<img class="bc-photo" src="${b.photoData}" alt="${b.name}">` : `<div class="bc-photo"></div>`}
+      <div class="bc-name">${b.name}</div>
+      ${b.title ? `<div class="bc-title">${b.title}</div>` : ''}
+      <div class="bc-contact">${b.email}${b.phone ? ' · ' + b.phone : ''}</div>
+      <div class="bc-bio">${b.bio || 'No bio provided.'}</div>
+      <div class="bc-sig">${b.agreementAccepted ? `<strong>✓ Agreement signed</strong> — ${b.signature}, ${b.signedDate}` : 'Agreement not yet signed'}</div>
+    </div>`).join('') : '<div class="empty-row" style="padding:28px; text-align:center; color:var(--gray); font-style:italic;">No board members added yet.</div>';
+}
+
+// ===== EXPORT =====
+function exportData() {
+  const rows = [['Type','Name','Detail','Amount','Status/Fund','Date']];
+  donors.forEach(d => rows.push(['Donation', d.name, `${d.email} / ${d.phone || '—'}`, `$${d.amt}`, d.fund, d.date]));
+  kids.forEach(k => rows.push(['Scholarship', k.name, `${k.program} - ${k.package}`, `$${k.cost}`, k.status, '']));
+  applications.forEach(a => rows.push(['Application', a.childName, `${a.program} / lunch:${a.lunch}`, '', a.status, a.date]));
+  volunteers.forEach(v => rows.push(['Volunteer', v.name, `${v.email} / ${v.interests.join('; ')}`, '', v.availability, v.date]));
+  boardMembers.forEach(b => rows.push(['Board Member', b.name, b.title, '', b.agreementAccepted ? 'Signed' : 'Unsigned', b.signedDate]));
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'lymf-export.csv';
+  a.click();
+}
+
+// ===== RENDER ALL =====
+function renderAll() {
+  renderOverview();
+  renderApplications();
+  renderFund();
+  renderPrograms();
+  renderDonorTable();
+  renderVolunteers();
+  renderBoardMembers();
+}
+function updateDate() {
+  document.getElementById('dateBadge').textContent = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+}
+
+// ===== WIRE UP (module scope -> global for inline onclick) =====
+window.showView = showView;
+window.toggleNav = toggleNav;
+window.closeNav = closeNav;
+window.toggleForm = toggleForm;
+window.addKid = addKid;
+window.addProgram = addProgram;
+window.addDonor = addDonor;
+window.openReceipt = openReceipt;
+window.closeReceipt = closeReceipt;
+window.copyReceipt = copyReceipt;
+window.markReceiptSent = markReceiptSent;
+window.exportData = exportData;
+window.doLogout = doLogout;
+window.viewApp = viewApp;
+window.approveApplication = approveApplication;
+window.denyApplication = denyApplication;
+window.undoDeny = undoDeny;
+window.closeAppDetail = closeAppDetail;
+
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('login-password').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+
+updateDate();
+</script>
+</body>
+</html>
