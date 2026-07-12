@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Access. Mentorship. Legacy. Donate, apply for a scholarship, volunteer, or connect with Leave Your Mark Foundation.">
+<title>Leave Your Mark Foundation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0A0A0A;
+    --white: #FFFFFF;
+    --gold: #A8892A;
+    --gold-light: #C4A03A;
+    --gold-pale: #F5EDD6;
+    --gray: #6B6B6B;
+    --rule: rgba(245, 237, 214, 0.14);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 480px;
+    padding: 64px 28px 48px;
+    text-align: center;
+  }
+  .brand {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+  }
+  .tagline {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--gold-light);
+    letter-spacing: 0.02em;
+    margin: 0 0 40px;
+  }
+  .links { display: flex; flex-direction: column; gap: 14px; }
+  .links a {
+    display: block;
+    padding: 16px 20px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    color: var(--white);
+    text-decoration: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.01em;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .links a:hover, .links a:focus-visible {
+    border-color: var(--gold);
+    background: rgba(168, 137, 42, 0.08);
+    outline: none;
+  }
+  .links a.primary {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--black);
+  }
+  .links a.primary:hover {
+    background: var(--gold-light);
+    border-color: var(--gold-light);
+  }
+  .footer-note {
+    margin-top: 48px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--gray);
+  }
+  .footer-note strong { color: rgba(255,255,255,0.7); font-weight: 500; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="brand">Leave Your<br>Mark Foundation</p>
+    <p class="tagline">Talent is everywhere. Opportunity isn&rsquo;t.</p>
+
+    <div class="links">
+      <a class="primary" href="https://lymfoundation.github.io/donate/Donate.html">Donate →</a>
+      <a href="https://lymfoundation.github.io/donate/apply.html">Apply for a Scholarship →</a>
+      <a href="https://lymfoundation.github.io/donate/volunteer.html">Volunteer With Us →</a>
+      <a href="https://lymfoundation.github.io/donate/legacy.html">Our Legacy →</a>
+      <a href="https://www.instagram.com/thelymfoundation">Follow on Instagram →</a>
+    </div>
+
+    <p class="footer-note">
+      We don&rsquo;t create dreams. We build the bridge.<br>
+      A 501(c)(3) public charity based in Cincinnati, OH.<br><br>
+      <strong>Leave Your Mark Foundation</strong> · EIN 84-3485963
+    </p>
+  </div>
+</body>
+</html>
