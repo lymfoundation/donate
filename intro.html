@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Leave Your Mark Foundation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --white:#FFFFFF;
+    --gold:#A8892A;
+    --gold-light:#C4A03A;
+    --gold-pale:#F5EDD6;
+    --gray:#6B6B6B;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{
+    width:100%;
+    height:100%;
+    background:var(--black);
+    overflow:hidden;
+  }
+  .intro-wrap{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    height:100dvh;
+    background:var(--black);
+  }
+  video{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    background:var(--black);
+  }
+  .overlay-top{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    padding:28px 24px;
+    display:flex;
+    justify-content:flex-end;
+    z-index:5;
+    opacity:0;
+    animation:fadeIn 0.6s ease-in 0.4s forwards;
+  }
+  .skip-btn{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    letter-spacing:0.12em;
+    font-size:13px;
+    text-transform:uppercase;
+    color:var(--gold-light);
+    background:rgba(10,10,10,0.4);
+    border:1px solid rgba(168,137,42,0.5);
+    padding:9px 18px;
+    border-radius:999px;
+    text-decoration:none;
+    backdrop-filter:blur(4px);
+  }
+  .overlay-bottom{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    padding:0 28px 48px;
+    z-index:5;
+    text-align:center;
+    opacity:0;
+    animation:fadeIn 0.8s ease-in 1s forwards;
+  }
+  .enter-btn{
+    display:inline-block;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    letter-spacing:0.14em;
+    font-size:16px;
+    text-transform:uppercase;
+    color:var(--black);
+    background:var(--gold);
+    padding:15px 40px;
+    border-radius:999px;
+    text-decoration:none;
+    box-shadow:0 4px 24px rgba(168,137,42,0.35);
+  }
+  .tagline{
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    color:var(--gray);
+    margin-bottom:14px;
+    letter-spacing:0.02em;
+  }
+  @keyframes fadeIn{
+    from{opacity:0; transform:translateY(6px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .sound-btn{
+    position:absolute;
+    top:28px;
+    left:24px;
+    z-index:5;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    background:rgba(10,10,10,0.4);
+    border:1px solid rgba(168,137,42,0.5);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    backdrop-filter:blur(4px);
+    opacity:0;
+    animation:fadeIn 0.6s ease-in 0.4s forwards;
+  }
+  .sound-btn svg{width:16px;height:16px;fill:var(--gold-light);}
+</style>
+</head>
+<body>
+
+<div class="intro-wrap">
+  <video id="introVideo" autoplay muted playsinline webkit-playsinline preload="auto">
+    <source src="LYMF_Intro_Vertical_Web.mp4" type="video/mp4">
+  </video>
+
+  <button class="sound-btn" id="soundBtn" aria-label="Toggle sound">
+    <svg id="muteIcon" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21c.61.55 1 1.34 1 1.82s-.39 1.27-1 1.82v2.21c1.48-.74 2.5-2.26 2.5-4.03zM3 9v6h4l5 5V4L7 9H3z"/></svg>
+  </button>
+
+  <div class="overlay-top">
+    <a class="skip-btn" href="donate.html">Skip Intro</a>
+  </div>
+
+  <div class="overlay-bottom">
+    <div class="tagline">Talent is everywhere. Opportunity isn't.</div>
+    <a class="enter-btn" href="donate.html">Enter</a>
+  </div>
+</div>
+
+<script>
+  const video = document.getElementById('introVideo');
+  const soundBtn = document.getElementById('soundBtn');
+  const muteIcon = document.getElementById('muteIcon');
+
+  const mutedIconPath = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21c.61.55 1 1.34 1 1.82s-.39 1.27-1 1.82v2.21c1.48-.74 2.5-2.26 2.5-4.03zM3 9v6h4l5 5V4L7 9H3z"/>';
+  const unmutedIconPath = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+
+  soundBtn.addEventListener('click', () => {
+    video.muted = !video.muted;
+    muteIcon.innerHTML = video.muted ? mutedIconPath : unmutedIconPath;
+  });
+
+  // Auto-advance to the donate page once the intro finishes playing
+  video.addEventListener('ended', () => {
+    window.location.href = 'donate.html';
+  });
+
+  // iOS Safari sometimes needs a nudge to start autoplay
+  document.addEventListener('DOMContentLoaded', () => {
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Autoplay was blocked; show a tap-to-play affordance via the Enter button (already visible)
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
